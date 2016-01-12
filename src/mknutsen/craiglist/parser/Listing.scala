@@ -29,6 +29,7 @@ class Listing(url: String, document: Document) {
   /**
    * description is in attrgroup (stuff like condition and size is specified here)
    * It gets parsed into a hashtable of key being description type (condition) and value being description (new)
+   * **this doesn't work yet **
    */
   val description = document.select(".attrgroup").text()
   val descriptionList = description.split("[ :]+")
