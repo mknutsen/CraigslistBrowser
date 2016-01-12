@@ -1,30 +1,29 @@
 package mknutsen.craiglist.parser
 
 import org.jsoup.Jsoup
-import org.jsoup.select.Elements
 
 import scala.collection.JavaConversions._
-
 
 /**
  * Created by mknutsen on 1/10/16.
  */
 object Parser {
-  val baseURL = "http://washingtondc.craigslist.org"
+  var baseURL = ".craigslist.org"
   val searchStart = "/search/sss"
 
   def main(args: Array[String]): Unit = {
-    val elems = getElements(baseURL + searchStart, ".i")
-    val links = getUrls(elems)
-    val docs = for (href <- links) yield getElements(baseURL + href, "#postingbody")
-    print(docs)
+    baseURL = "http://" + args(0) + baseURL
+    val listings = getListings(baseURL + searchStart)
+    println(listings(0))
+    for (item <- listings(0).description.split(":")) println(item)
   }
 
-  def getElements(url: String, selector: String): Elements = {
-    Jsoup.connect(url).get().select(selector)
-  }
-
-  def getUrls(elems: Elements): List[String] = {
-    (for (elem <- elems) yield elem.attr("href") mkString) toList
+  def getListings(url: String): List[Listing] = {
+    val elems = Listing.getElements(url, ".i")
+    while (elems.length > 1) {
+      elems.remove(1)
+    }
+    val links = Listing.getUrls(elems)
+    for (link <- links) yield new Listing(baseURL + link, Jsoup.connect(baseURL + link).get())
   }
 }
