@@ -14,15 +14,14 @@ object Parser {
   def main(args: Array[String]): Unit = {
     baseURL = "http://" + args(0) + baseURL
     val listings = getListings(baseURL + searchStart)
-    println(listings(0))
-    for (item <- listings(0).description.split(":")) println(item)
+    for (listing <- listings) println(listing)
   }
 
   def getListings(url: String): List[Listing] = {
     val elems = Listing.getElements(url, ".i")
-    while (elems.length > 1) {
-      elems.remove(1)
-    }
+//    while (elems.length > 1) {
+//      elems.remove(1)
+//    }
     val links = Listing.getUrls(elems)
     for (link <- links) yield new Listing(baseURL + link, Jsoup.connect(baseURL + link).get())
   }
