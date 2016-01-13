@@ -47,15 +47,19 @@ class Listing(url: String, document: Document) {
    */
   private var documentStringCounter = textDocument.indexOf('$') + 1
   private var amount = 0
-  var currentChar = textDocument.charAt(documentStringCounter)
+  private var currentChar = textDocument.charAt(documentStringCounter)
+  private var priceOnPage = false
   while (documentStringCounter < textDocument.length && currentChar >= 48 && currentChar <= 57) {
+    priceOnPage = true
     amount *= 10
     amount += Integer.parseInt(textDocument.charAt(documentStringCounter) + "")
     documentStringCounter += 1
     currentChar = textDocument.charAt(documentStringCounter)
   }
-
-  private val itemCost = amount
+  /**
+   * cost of the item is $-1 if the price wasn't actually listed
+   */
+  private val itemCost = if (priceOnPage) amount else -1
 
 
   override def toString = "Listed: " + title + " for $" + itemCost + " at " + url + "  " + descriptionTable
