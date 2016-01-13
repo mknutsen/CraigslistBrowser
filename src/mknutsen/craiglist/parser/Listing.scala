@@ -61,6 +61,10 @@ class Listing(url: String, document: Document) {
    */
   private val itemCost = if (priceOnPage) amount else -1
 
+  if (itemCost == -1) {
+    System.err.println(url)
+  }
+
 
   override def toString = "Listed: " + title + " for $" + itemCost + " at " + url + "  " + descriptionTable
 }

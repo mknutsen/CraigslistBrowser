@@ -17,10 +17,13 @@ object Parser {
   def main(args: Array[String]): Unit = {
     baseURL = "http://" + args(0) + baseURL
     val numPages = if (args.length >= 2) Integer.parseInt(args(1)) else 1
+    var listings: List[Listing] = List()
     for (i <- 0 to numPages - 1) {
-      val listings = getListings(baseURL + searchStart + i * 100)
-      for (listing <- listings) println(listing)
+      val tempListings = getListings(baseURL + searchStart + i * 100)
+      listings = tempListings ::: listings
     }
+    println(listings.length)
+    for (listing <- listings) println(listing)
   }
 
   def getListings(url: String): List[Listing] = {
