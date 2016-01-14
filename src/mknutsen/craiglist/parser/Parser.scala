@@ -29,7 +29,7 @@ object Parser {
   def getListings(url: String): List[Listing] = {
     val elems = Listing.getElements(url, ".i")
     while (elems.size() > 15) {
-      elems.remove(1)
+      elems.remove(0)
     }
     val links = Listing.getUrls(elems)
     for (link <- links) yield new Listing(baseURL + link, Jsoup.connect(baseURL + link).get())

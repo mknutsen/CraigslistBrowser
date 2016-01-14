@@ -33,15 +33,8 @@ class Listing(url: String, document: Document) {
     * It gets parsed into a hashtable of key being description type (condition) and value being description (new)
     * **this doesn't work yet **
     */
-  val descriptionTable = new mutable.HashMap[String, String]()
-  private var description = document.select(".attrgroup").toString().toLowerCase()
-  while (description.indexOf("<span>") > -1 && description.indexOf("</b>") > -1) {
-    val key = Listing.extractStringBetweenIndicators("<span>", ":", description)
-    val value = Listing.extractStringBetweenIndicators("<b>", "</b>", description)
-    descriptionTable.put(key, value)
-    val newLoc = description.indexOf("</b>") + "</b>".length
-    description = description.substring(newLoc)
-  }
+  private val description = document.select(".attrgroup")
+  private val descriptionTable = parseDescription(description)
   private val textDocument = document.text()
 
   /**
@@ -57,8 +50,17 @@ class Listing(url: String, document: Document) {
     System.err.println(url)
   }
 
-  private def parseDescription(descriptionList: Array[String]) = {
-    for (i <- 0 to descriptionList.length - 2 by 2) yield descriptionList(i) -> descriptionList(i + 1)
+  private def parseDescription(descriptionList: Elements): mutable.HashMap[String, String] = {
+    var descriptionText = descriptionList.toString().toLowerCase()
+    val descriptionTable = new mutable.HashMap[String, String]()
+    while (descriptionText.indexOf("<span>") > -1 && descriptionText.indexOf("</b>") > -1) {
+      val key = Listing.extractStringBetweenIndicators("<span>", ":", descriptionText)
+      val value = Listing.extractStringBetweenIndicators("<b>", "</b>", descriptionText)
+      descriptionTable.put(key, value)
+      val newLoc = descriptionText.indexOf("</b>") + "</b>".length
+      descriptionText = descriptionText.substring(newLoc)
+    }
+    return descriptionTable
   }
 
 
