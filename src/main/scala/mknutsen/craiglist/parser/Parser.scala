@@ -1,5 +1,7 @@
 package mknutsen.craiglist.parser
 
+import java.io.{BufferedWriter, FileWriter, PrintWriter}
+
 import org.jsoup.Jsoup
 
 /**
@@ -12,7 +14,8 @@ object Parser {
   /**
     *
     * @param args
-   * [city in a string like washingtondc for washingtondc.craigslist.com, number of pages to look through]
+    * [city in a string like washingtondc for washingtondc.craigslist.com, number of pages to look through, file to
+    * write to]
     */
   def main(args: Array[String]): Unit = {
     baseURL = "http://" + args(0) + baseURL
@@ -23,7 +26,11 @@ object Parser {
       listings = tempListings ::: listings
     }
     println("number of listings: " + listings.length)
-    for (listing <- listings) println(listing)
+    if (args.length > 2) val out = new PrintWriter(new BufferedWriter(new FileWriter("myfile.txt", true))))
+    for (listing <- listings) {
+      println(listing)
+      if (out != null) out.println(listing)
+    }
   }
 
   def getListings(url: String): List[Listing] = {
@@ -33,5 +40,6 @@ object Parser {
     }
     val links = Listing.getUrls(elems)
     for (link <- links) yield new Listing(baseURL + link, Jsoup.connect(baseURL + link).get())
+
   }
 }
