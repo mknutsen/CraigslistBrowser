@@ -11,7 +11,7 @@ import scala.collection.JavaConversions._
   * Created by mknutsen on 1/11/16.
   */
 class Listing(url: String, document: Document) {
-  private val isDead = document.text().indexOf("Page Not Found") == -1
+  private val isDead = document.text().indexOf("Page Not Found") != -1
   /**
     * Titles is in the postingtitle class
     */
@@ -72,7 +72,13 @@ class Listing(url: String, document: Document) {
 
   def getIsDead() = isDead
 
-  override def toString = "Listed: " + title + " for $" + itemCost + " at " + url + "  " + descriptionTable
+  override def toString = {
+    if (isDead) {
+      "Link is dead at " + url
+    } else {
+      "Listed: " + title + " for $" + itemCost + " at " + url + "  " + descriptionTable
+    }
+  }
 }
 
 object Listing {
@@ -80,7 +86,7 @@ object Listing {
     var returnVal = ""
     var start = str.indexOf(indicator) + indicator.length
     val strArray = str.toCharArray
-    while (strArray(start) <= high && strArray(start) >= low) {
+    while (start < strArray.length && strArray(start) <= high && strArray(start) >= low) {
       returnVal += strArray(start)
       start += 1
     }

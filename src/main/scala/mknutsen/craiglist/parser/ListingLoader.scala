@@ -13,7 +13,7 @@ object ListingLoader {
   }
 
   def serializeListing(listing: Listing): String = {
-    listing.getTitle() + ";" + listing.getURL()
+    if (listing.getIsDead()) "" else listing.getTitle() + ";" + listing.getURL()
   }
 
   def main(args: Array[String]): Unit = {
