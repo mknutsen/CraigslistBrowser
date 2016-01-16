@@ -3,6 +3,7 @@ package mknutsen.craiglist.parser
 import java.io.{BufferedWriter, FileWriter, PrintWriter}
 
 import org.jsoup.Jsoup
+
 //http://washingtondc.craigslist.org/search/sss?s=100&is_paid=all&query=car&search_distance_type=mi&sort=rel
 /**
   * Created by mknutsen on 1/10/16.
@@ -14,11 +15,14 @@ object Parser {
   /**
     *
     * @param args
-    * [city in a string like washingtondc for washingtondc.craigslist.com, number of pages to look through, file to
-    * write to]
+    * [city in a string (washingtondc),
+    * number of pages to look through (3),
+    * file to write to (file.txt),
+    * search query taken from searching in craiglist and c+p it in
+    * (&is_paid=all&query=car&search_distance_type=mi&sort=rel)]
     */
   def main(args: Array[String]): Unit = {
-    val searchPostfix = if(args.length > 3) args(3) else ""
+    val searchPostfix = if (args.length > 3) args(3) else ""
     baseURL = "http://" + args(0) + baseURL
     val numPages = if (args.length >= 2) Integer.parseInt(args(1)) else 1
     var listings: List[Listing] = List()

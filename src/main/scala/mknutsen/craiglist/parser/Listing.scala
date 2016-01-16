@@ -54,11 +54,15 @@ class Listing(url: String, document: Document) {
     var descriptionText = if (isDead) "" else descriptionList.toString().toLowerCase()
     val descriptionTable = new scala.collection.mutable.HashMap[String, String]()
     while (descriptionText.indexOf("<span>") > -1 && descriptionText.indexOf("</b>") > -1) {
-      val key = Listing.extractStringBetweenIndicators("<span>", ":", descriptionText)
-      val value = Listing.extractStringBetweenIndicators("<b>", "</b>", descriptionText)
-      descriptionTable.put(key, value)
-      val newLoc = descriptionText.indexOf("</b>") + "</b>".length
-      descriptionText = descriptionText.substring(newLoc)
+      if (descriptionText.indexOf("<span>") + "<span>".length != descriptionText.indexOf("<b>")) {
+        val key = Listing.extractStringBetweenIndicators("<span>", ":", descriptionText)
+        val value = Listing.extractStringBetweenIndicators("<b>", "</b>", descriptionText)
+        descriptionTable.put(key, value)
+        val newLoc = descriptionText.indexOf("</b>") + "</b>".length
+        descriptionText = descriptionText.substring(newLoc)
+      } else{
+        descriptionText = descriptionText.substring(descriptionText.indexOf("</span>") + "</span>".length)
+      }
     }
     return descriptionTable
   }
