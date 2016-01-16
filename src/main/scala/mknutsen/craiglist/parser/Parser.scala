@@ -26,11 +26,14 @@ object Parser {
       listings = tempListings ::: listings
     }
     println("number of listings: " + listings.length)
-    if (args.length > 2) val out = new PrintWriter(new BufferedWriter(new FileWriter("myfile.txt", true))))
+    val out: PrintWriter = if (args.length > 2) new PrintWriter(new BufferedWriter(new FileWriter(args(2),
+      false)))
+    else null
     for (listing <- listings) {
       println(listing)
-      if (out != null) out.println(listing)
+      if (out != null) out.println(ListingLoader.serializeListing(listing))
     }
+    if (out != null) out.close()
   }
 
   def getListings(url: String): List[Listing] = {
