@@ -4,8 +4,6 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 
-import scala.collection.mutable
-
 //import scala.collection.JavaConversions._
 import scala.collection.JavaConversions._
 
@@ -13,38 +11,36 @@ import scala.collection.JavaConversions._
   * Created by mknutsen on 1/11/16.
   */
 class Listing(url: String, document: Document) {
-  def this(url: String) = {
-    this(url, null)
-  }
-
+  private val isDead = document.text().indexOf("Page Not Found") == -1
   /**
     * Titles is in the postingtitle class
     */
-  private val title = if (document == null) "" else document.select(".postingtitle").text()
+  private val title = if (isDead) "" else document.select(".postingtitle").text()
 
   /**
     * the body has the ID postingbody
     */
-  private val postBody = if (document == null) "" else document.select("#postingbody").text()
+  private val postBody = if (isDead) "" else document.select("#postingbody").text()
 
   /**
     * Images url is located somewhere in the iw oneimage class, ill parse that later
     */
-  private val imageLocation = if (document == null) "" else document.select(".iw oneimage")
+  private val imageLocation = if (isDead) "" else document.select(".iw oneimage")
 
   /**
     * description is in attrgroup (stuff like condition and size is specified here)
     * It gets parsed into a hashtable of key being description type (condition) and value being description (new)
     * **this doesn't work yet **
     */
-  private val description = if (document == null) new Elements() else document.select(".attrgroup")
+  private val description = if (isDead) new Elements() else document.select(".attrgroup")
   private val descriptionTable = parseDescription(description)
-  private val textDocument = if (document == null) "" else document.text()
+  private val textDocument = if (isDead) "" else document.text()
 
   /**
     * Parses out the cost of the object
     */
   private val amount = Listing.extractStringAfterIndicator('0', '9', textDocument, "$")
+
   /**
     * cost of the item is $-1 if the price wasn't actually listed
     */
@@ -54,9 +50,9 @@ class Listing(url: String, document: Document) {
     System.err.println(url)
   }
 
-  private def parseDescription(descriptionList: Elements): mutable.HashMap[String, String] = {
-    var descriptionText = if (document == null) "" else descriptionList.toString().toLowerCase()
-    val descriptionTable = new mutable.HashMap[String, String]()
+  private def parseDescription(descriptionList: Elements): scala.collection.mutable.HashMap[String, String] = {
+    var descriptionText = if (isDead) "" else descriptionList.toString().toLowerCase()
+    val descriptionTable = new scala.collection.mutable.HashMap[String, String]()
     while (descriptionText.indexOf("<span>") > -1 && descriptionText.indexOf("</b>") > -1) {
       val key = Listing.extractStringBetweenIndicators("<span>", ":", descriptionText)
       val value = Listing.extractStringBetweenIndicators("<b>", "</b>", descriptionText)
@@ -74,7 +70,7 @@ class Listing(url: String, document: Document) {
 
   def getURL() = url
 
-  def isDead() = title.eq("")
+  def getIsDead() = isDead
 
   override def toString = "Listed: " + title + " for $" + itemCost + " at " + url + "  " + descriptionTable
 }
