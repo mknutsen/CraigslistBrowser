@@ -43,15 +43,15 @@ class Listing ( url : String, isDead : Boolean, title : String, postBody : Strin
 	}
 
 
-	def getTitle ( ) = title
+	final def getTitle ( ) = title
 
-	def getPrice ( ) = cost
+	final def getPrice ( ) = cost
 
-	def getURL ( ) = url
+	final def getURL ( ) = url
 
-	def getIsDead ( ) = isDead
+	final def getIsDead ( ) = isDead
 
-	override def toString = {
+	final override def toString = {
 		if ( isDead ) {
 			"Link is dead at " + url
 		} else {
@@ -60,7 +60,7 @@ class Listing ( url : String, isDead : Boolean, title : String, postBody : Strin
 	}
 }
 
-object Listing {
+final object Listing {
 	def parseDescription ( descriptionList : Elements ) : scala.collection.mutable.HashMap[ String, String ] = {
 		var descriptionText = if ( descriptionList == null ) "" else descriptionList.toString ( ).toLowerCase ( )
 		val descriptionTable = new scala.collection.mutable.HashMap[ String, String ]( )
@@ -91,7 +91,7 @@ object Listing {
 
 	def extractStringBetweenIndicators ( startString : String, endString : String, str : String ) : String = {
 		val startLoc = str.indexOf ( startString )
-		println(startString)
+		println ( startString )
 		if ( startLoc < 0 ) {
 			return ""
 		}
