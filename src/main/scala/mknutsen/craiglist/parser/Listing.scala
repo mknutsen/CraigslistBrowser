@@ -39,9 +39,7 @@ class Listing ( url : String, isDead : Boolean, title : String, postBody : Strin
 																						.extractStringAfterIndicator ( '0', '9', document.text ( ), "$" ) ),
 					 Listing.extractStringBetweenIndicators ( "datetime=\"", "\"",
 																										document.select ( "#display-date" ).toString ) )
-		println ( document.select ( "#display-date" ) )
 	}
-
 
 	final def getTitle ( ) = title
 
@@ -92,13 +90,10 @@ final object Listing {
 
 	def extractStringBetweenIndicators ( startString : String, endString : String, str : String ) : String = {
 		val startLoc = str.indexOf ( startString )
-		println ( startString )
 		if ( startLoc < 0 ) {
 			return ""
 		}
 		val strStartingPoint = str.substring ( startLoc + startString.length )
-		println ( strStartingPoint )
-		println ( strStartingPoint.indexOf ( endString ) )
 		return strStartingPoint.substring ( 0, strStartingPoint.indexOf ( endString ) )
 	}
 
