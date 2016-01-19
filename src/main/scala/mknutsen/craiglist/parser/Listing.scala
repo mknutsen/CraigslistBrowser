@@ -55,7 +55,8 @@ class Listing ( url : String, isDead : Boolean, title : String, postBody : Strin
 		if ( isDead ) {
 			"Link is dead at " + url
 		} else {
-			"Listed: " + title + " for $" + cost + " at " + url + "  " + descriptionTable + " posted on " + datePosted
+			( if ( isDead ) "dead link: " else "Listed: " ) + title + " for $" + cost + " at " + url + "  " +
+				descriptionTable + "posted on " + datePosted
 		}
 	}
 }
@@ -113,14 +114,14 @@ final object Listing {
 		for ( elem <- elems ) yield elem.text mkString
 	}
 
+
+	/**
+		* @param amount
+		* string representing the amount
+		* @return cost of the item is $-1 if the price wasn't actually listed
+		*/
 	def parsePriceFromString ( amount : String ) : Int = {
-
-
-		/**
-			* cost of the item is $-1 if the price wasn't actually listed
-			*/
 		val itemCost = if ( amount.length ( ) > 0 ) Integer.parseInt ( amount ) else -1
-
 		return itemCost
 	}
 }
