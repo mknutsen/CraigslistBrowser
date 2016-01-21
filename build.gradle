@@ -2,9 +2,9 @@ group 'CraigslistBrowser'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'scala'
-apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'idea'
-
+mainClassName = "mknutsen.craiglist.parser.Parser"
 
 dependencies {
 

@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="Loader:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/Loader_jar/Dropbox</output-path>
+  <artifact type="jar" build-on-make="true" name="CraigslistBrowser:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CraigslistBrowser_jar</output-path>
     <root id="archive" name="CraigslistBrowser.jar">
       <element id="module-output" name="CraigslistBrowser" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.scala-lang/scala-library/2.11.7/f75e7acabd57b213d6f61483240286c07213ec0e/scala-library-2.11.7.jar" path-in-jar="/" />
