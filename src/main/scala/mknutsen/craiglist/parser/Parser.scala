@@ -67,7 +67,7 @@ object Parser {
 		println ( "number of listings: " + listings.length )
 		val out : PrintWriter = if ( args.length > 3 ) {
 			new PrintWriter ( new BufferedWriter ( new FileWriter ( args ( 3 ),
-																															false ) ) )
+																															true ) ) )
 		} else {
 			null
 		}
