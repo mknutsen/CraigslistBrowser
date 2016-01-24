@@ -10,8 +10,6 @@ import scala.collection.JavaConversions._
 /**
 	* @param url
 	* url of the listing
-	* @param isDead
-	* is the listing still up
 	* @param title
 	* title of the listing
 	* @param postBody
@@ -22,23 +20,28 @@ import scala.collection.JavaConversions._
 	* table of descriptions (condition->excellent, etc)
 	* @param cost
 	* how much this cost
+	* @param datePosted
+	* date it was posted
+	* @param dateTakenDown
+	* date it was taken down if known
 	*/
-class Listing ( url : String, isDead : Boolean, title : String, postBody : String, imageLocation : Elements,
+class Listing ( url : String, title : String, postBody : String, imageLocation : Elements,
 								descriptionTable : scala.collection.mutable.HashMap[ String, String ], cost : Int,
-								datePosted : String ) {
+								datePosted : String, dateTakenDown : String ) {
+
 
 	/**
 		* @param url
 		* @param document
 		*/
 	def this ( url : String, document : Document ) = {
-		this ( url, false, document.select ( ".postingtitle" ).text ( ), document.select ( "#postingbody" ).text ( ),
+		this ( url, document.select ( ".postingtitle" ).text ( ), document.select ( "#postingbody" ).text ( ),
 					 document.select
 					 ( ".iw oneimage" ), Listing.parseDescription ( document.select ( ".attrgroup" ) ),
 					 Listing.parsePriceFromString ( Listing
 																						.extractStringAfterIndicator ( '0', '9', document.text ( ), "$" ) ),
 					 Listing.extractStringBetweenIndicators ( "datetime=\"", "\"",
-																										document.select ( "#display-date" ).toString ) )
+																										document.select ( "#display-date" ).toString ), "" )
 	}
 
 	final def getTitle ( ) = title
@@ -47,13 +50,21 @@ class Listing ( url : String, isDead : Boolean, title : String, postBody : Strin
 
 	final def getURL ( ) = url
 
-	final def getIsDead ( ) = isDead
+	final def getIsDead ( ) = !"".equals ( dateTakenDown )
+
+	final def getBody ( ) = postBody
+
+	final def getDescription ( ) = descriptionTable
+
+	final def getDateTakenDown ( ) = datePosted
+
+	final def getDatePosted ( ) = dateTakenDown
 
 	final override def toString = {
-		if ( isDead ) {
+		if ( getIsDead ( ) ) {
 			"Link is dead at " + url
 		} else {
-			( if ( isDead ) "dead link: " else "Listed: " ) + title + " for $" + cost + " at " + url + "  " +
+			( if ( getIsDead ( ) ) "dead link: " else "Listed: " ) + title + " for $" + cost + " at " + url + "  " +
 				descriptionTable + "posted on " + datePosted
 		}
 	}
@@ -94,7 +105,7 @@ final object Listing {
 			return ""
 		}
 		val strStartingPoint = str.substring ( startLoc + startString.length )
-		return strStartingPoint.substring ( 0, strStartingPoint.indexOf ( endString ) )
+		strStartingPoint.substring ( 0, strStartingPoint.indexOf ( endString ) )
 	}
 
 	def getElements ( url : String, selector : String ) : Elements = {

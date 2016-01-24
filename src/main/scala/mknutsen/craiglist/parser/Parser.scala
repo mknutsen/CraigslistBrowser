@@ -1,9 +1,11 @@
 package mknutsen.craiglist.parser
 
 import java.io.{BufferedWriter, FileWriter, PrintWriter}
+import java.time.{LocalDateTime, ZoneId}
 
 import org.jsoup.Jsoup
 
+import scala.collection.mutable
 import scala.io.Source
 
 //http://washingtondc.craigslist.org/search/sss?s=100&is_paid=all&query=car&search_distance_type=mi&sort=rel
@@ -88,17 +90,37 @@ object Parser {
 		for ( link <- links ) yield new Listing ( baseURL + link, Jsoup.connect ( baseURL + link ).get ( ) )
 	}
 
+	def parseDescription ( s : String ) : mutable.HashMap[ String, String ] = {
+		val descriptionTable = new scala.collection.mutable.HashMap[ String, String ]( )
+		val descriptions = s.substring(4).split(",")
+		println(descriptions)
+		return descriptionTable
+	}
+
 	def processLineSegment ( lineSegments : Array[ String ] ) : Listing = {
-		val document = Jsoup.connect ( lineSegments ( 1 ) ).get ( )
+		val document = Jsoup.connect ( lineSegments ( 0 ) ).get ( )
 		if ( document.toString.indexOf ( "No web page for this address" ) == -1 ) {
-			return new Listing ( lineSegments ( 1 ), Jsoup.connect ( lineSegments ( 1 ) ).get ( ) )
+			return new Listing ( lineSegments (0 ), document )
 		} else {
-			return new Listing ( lineSegments ( 1 ), true, "", "", null, null, -1, "" ) // to implement later
+			val newYork = ZoneId.of ( "America/New_York" )
+			return new Listing ( lineSegments ( 0 ), lineSegments ( 1 ), lineSegments ( 3 ), null,
+													 parseDescription ( lineSegments ( 4 ) ), Listing.parsePriceFromString ( lineSegments ( 2
+																																																								) ),
+													 lineSegments ( 5 ),
+													 if ( lineSegments.length > 6 && lineSegments ( 6 ) != "" ) {
+														 lineSegments ( 6 )
+													 }
+													 else {
+														 LocalDateTime.now ( newYork ).toString ( )
+													 } )
+			// to
+			// implement later
 		}
 	}
 
 	def serializeListing ( listing : Listing ) : String = {
-		if ( listing.getIsDead ( ) ) "" else listing.getTitle ( ) + ";" + listing.getURL ( )
+		listing.getURL ( ) + ";" + listing.getTitle ( ) + ";" + listing.getPrice ( ) + ";" + listing.getBody ( ) + ";" +
+			listing.getDescription ( ).toString ( ) + listing.getDatePosted ( ) + ";" + listing.getDateTakenDown ( )
 	}
 
 	def printListings ( listings : List[ Listing ] ) = {
