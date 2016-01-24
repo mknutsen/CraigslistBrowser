@@ -90,17 +90,28 @@ object Parser {
 		for ( link <- links ) yield new Listing ( baseURL + link, Jsoup.connect ( baseURL + link ).get ( ) )
 	}
 
+	/**
+		* havent tested this, not thinking its gonna work but we will see.
+		*
+		* @param s
+		* @return
+		*/
 	def parseDescription ( s : String ) : mutable.HashMap[ String, String ] = {
 		val descriptionTable = new scala.collection.mutable.HashMap[ String, String ]( )
-		val descriptions = s.substring(4).split(",")
-		println(descriptions)
+		val descriptions = s.substring ( 4 ).split ( "," )
+		println ( descriptions )
+		for ( description <- descriptions ) {
+			val keyEnd = description.indexOf ( " -> " )
+			val valBegin = keyEnd + " -> ".length
+			descriptionTable.put ( description.substring ( 0, keyEnd ), description.substring ( valBegin ) )
+		}
 		return descriptionTable
 	}
 
 	def processLineSegment ( lineSegments : Array[ String ] ) : Listing = {
 		val document = Jsoup.connect ( lineSegments ( 0 ) ).get ( )
 		if ( document.toString.indexOf ( "No web page for this address" ) == -1 ) {
-			return new Listing ( lineSegments (0 ), document )
+			return new Listing ( lineSegments ( 0 ), document )
 		} else {
 			val newYork = ZoneId.of ( "America/New_York" )
 			return new Listing ( lineSegments ( 0 ), lineSegments ( 1 ), lineSegments ( 3 ), null,
