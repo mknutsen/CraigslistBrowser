@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/CraigslistBrowser.iml" filepath="$PROJECT_DIR$/CraigslistBrowser.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CraigslistBrowserNLP.iml" filepath="$PROJECT_DIR$/CraigslistBrowserNLP.iml" />
     </modules>
   </component>
 </project>
