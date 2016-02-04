@@ -19,25 +19,32 @@ object Parser {
 	/**
 		*
 		* @param args
-		* write locationIdentifier numListings fileOut.txt &is_paid=all&query=car&search_distance_type=mi&sort=rel
+		* write locationIdentifier numListings open.txt closed.txt &is_paid=all&query=car&search_distance_type=mi&sort=rel
 		* or
 		* load open.txt closed.txt
 		*/
 	def main ( args : Array[ String ] ) : Unit = {
-		args ( 0 ) match {
-			case "write" ⇒ write ( args )
-			case "load" ⇒ load ( args )
-			case _ ⇒ throw new IllegalArgumentException ( " write locationIdentifier numListings fileOut.txt " +
-																											"&is_paid=all&query=car&search_distance_type=mi&sort=rel\n\t\t" +
-																											" " +
-																											"or\\n\\t\\t* load file.txt" )
+		val configFile : mutable.HashMap[ String, String ] = loadConfigFile ( args ( 0 ) )
+		val actionType = configFile.get ( "action" )
+		if ( actionType == null || actionType.isEmpty ) {
+
+		} else if ( "write".equals ( actionType.get ) ) {
+			write ( configFile )
+		} else if ( "load".equals ( actionType.get ) ) {
+			load ( configFile )
+		} else {
+
 		}
+//		" write locationIdentifier numListings fileOut.txt " +
+//			"&is_paid=all&query=car&search_distance_type=mi&sort=rel\n\t\t" +
+//			" " +
+//			"or\\n\\t\\t* load file.txt" )
 	}
 
-	def load ( args : Array[ String ] ) : Unit = {
-		val closedFile = new PrintWriter ( new BufferedWriter ( new FileWriter ( args ( 2 ), true ) ) )
+	def load ( args : mutable.HashMap[ String, String ] ) : Unit = {
+		val closedFile = new PrintWriter ( new BufferedWriter ( new FileWriter ( args.get ( "closedFile" ).get, true ) ) )
 		var listings = List [ Listing ]( )
-		for ( line <- Source.fromFile ( args ( 1 ) ).getLines ( ) ) {
+		for ( line <- Source.fromFile ( args.get ( "openFile" ).get ).getLines ( ) ) {
 			val lineSegments = line.split ( ";" )
 			val newListing = processLineSegment ( lineSegments )
 			if ( newListing.getIsDead ( ) ) {
@@ -47,37 +54,47 @@ object Parser {
 			}
 		}
 		closedFile.close ( )
-		val openFile = new PrintWriter ( new BufferedWriter ( new FileWriter ( args ( 1 ),
+		val openFile = new PrintWriter ( new BufferedWriter ( new FileWriter ( args.get ( "openFile" ).get,
 																																					 false ) ) )
 		printListings ( listings, openFile )
 		println ( "number of listings: " + listings.size )
 		openFile.close ( )
 	}
 
-	def write ( args : Array[ String ] ) : Unit = {
-		val searchPostfix = if ( args.length > 4 ) args ( 4 ) else ""
-		baseURL = "http://" + args ( 1 ) + baseURL
-		val numListings = if ( args.length >= 3 ) Integer.parseInt ( args ( 2 ) ) else 1
-		var listings : List[ Listing ] = List ( )
-		var i = 0
+	def write ( args : mutable.HashMap[ String, String ] ) : Unit = {
+		val closedFile = new PrintWriter ( new BufferedWriter ( new FileWriter ( args.get ( "closedFile" ).get, true ) ) )
+		var listings = List [ Listing ]( )
+		for ( line <- Source.fromFile ( args.get ( "openFile" ).get ).getLines ( ) ) {
+			val lineSegments = line.split ( ";" )
+			val newListing = processLineSegment ( lineSegments )
+			if ( newListing.getIsDead ( ) ) {
+				closedFile.println ( serializeListing ( newListing ) )
+			} else {
+				listings = newListing :: listings
+			}
+		}
+
+		val searchPostfix = args.get ( "searchPostfix" ).get
+		baseURL = "http://" + args.get ( "location" ).get + baseURL
+		val numListings = Integer.parseInt ( args.get ( "numListings" ).get ) - listings.size
+
+		var pageNumber = 0
 		while ( listings.size < numListings ) {
-			val tempListings = getListings ( baseURL + searchStart + i * 100 + searchPostfix,
+			val tempListings = getListings ( baseURL + searchStart + pageNumber * 100 + searchPostfix,
 																			 numListings - listings.size )
-			i += 1
+			pageNumber += 1
 			listings = tempListings ::: listings
 		}
 		println ( "number of listings: " + listings.length )
-		val out : PrintWriter = if ( args.length > 3 ) {
-			new PrintWriter ( new BufferedWriter ( new FileWriter ( args ( 3 ),
-																															true ) ) )
-		} else {
-			null
-		}
+		val out : PrintWriter =
+			new PrintWriter ( new BufferedWriter ( new FileWriter ( args.get ( "openFile" ).get, true ) ) )
+
 		if ( out == null ) {
 			printListings ( listings )
 		} else {
 			printListings ( listings = listings, printWriter = out )
 			out.close ( )
+			closedFile.close ( )
 		}
 	}
 
@@ -124,8 +141,6 @@ object Parser {
 													 else {
 														 LocalDateTime.now ( newYork ).toString ( )
 													 } )
-			// to
-			// implement later
 		}
 	}
 
@@ -140,5 +155,14 @@ object Parser {
 
 	def printListings ( listings : List[ Listing ], printWriter : PrintWriter ) = {
 		for ( listing ← listings ) printWriter.println ( serializeListing ( listing ) )
+	}
+
+	def loadConfigFile ( fileLoc : String ) : mutable.HashMap[ String, String ] = {
+		val configMap = new mutable.HashMap[ String, String ]( )
+		for ( line <- Source.fromFile ( fileLoc ).getLines ( ) ) {
+			val lineParts = line.split ( ":" )
+			configMap.put ( lineParts ( 0 ), lineParts ( 1 ) )
+		}
+		return configMap
 	}
 }

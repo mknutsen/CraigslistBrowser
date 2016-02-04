@@ -1,0 +1,6 @@
+action:write
+openFile:open.txt
+closedFile:closed.txt
+searchPostfix:&is_paid=all&search_distance_type=mi&min_price=100&max_price=3000&query=xbox+one
+location:washingtondc
+numListings:10
