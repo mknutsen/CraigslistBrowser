@@ -1,6 +1,7 @@
 package mknutsen.craiglist.parser
 
 import java.io.{BufferedWriter, FileWriter, PrintWriter}
+import java.nio.file.{Files, Paths}
 import java.time.{LocalDateTime, ZoneId}
 
 import org.jsoup.Jsoup
@@ -64,16 +65,17 @@ object Parser {
 	def write ( args : mutable.HashMap[ String, String ] ) : Unit = {
 		val closedFile = new PrintWriter ( new BufferedWriter ( new FileWriter ( args.get ( "closedFile" ).get, true ) ) )
 		var listings = List [ Listing ]( )
-		for ( line <- Source.fromFile ( args.get ( "openFile" ).get ).getLines ( ) ) {
-			val lineSegments = line.split ( ";" )
-			val newListing = processLineSegment ( lineSegments )
-			if ( newListing.getIsDead ( ) ) {
-				closedFile.println ( serializeListing ( newListing ) )
-			} else {
-				listings = newListing :: listings
+		if ( Files.exists ( Paths.get ( args.get ( "openFile" ).get ) ) ) {
+			for ( line <- Source.fromFile ( args.get ( "openFile" ).get ).getLines ( ) ) {
+				val lineSegments = line.split ( ";" )
+				val newListing = processLineSegment ( lineSegments )
+				if ( newListing.getIsDead ( ) ) {
+					closedFile.println ( serializeListing ( newListing ) )
+				} else {
+					listings = newListing :: listings
+				}
 			}
 		}
-
 		val searchPostfix = args.get ( "searchPostfix" ).get
 		baseURL = "http://" + args.get ( "location" ).get + baseURL
 		val numListings = Integer.parseInt ( args.get ( "numListings" ).get )
