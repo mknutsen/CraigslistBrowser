@@ -13,8 +13,8 @@ import scala.io.Source
 	* Created by mknutsen on 1/10/16.
 	*/
 object Parser {
-	var baseURL = ".craigslist.org"
 	val searchStart = "/search/sss?s"
+	var baseURL = ".craigslist.org"
 
 	/**
 		*
@@ -110,7 +110,7 @@ object Parser {
 
 	def processLineSegment ( lineSegments : Array[ String ] ) : Listing = {
 		val document = Jsoup.connect ( lineSegments ( 0 ) ).get ( )
-		if ( document.toString.indexOf ( "No web page for this address" ) == -1 ) {
+		if ( document.toString.indexOf ( "This posting has been deleted by its author" ) == -1 ) {
 			return new Listing ( lineSegments ( 0 ), document )
 		} else {
 			val newYork = ZoneId.of ( "America/New_York" )

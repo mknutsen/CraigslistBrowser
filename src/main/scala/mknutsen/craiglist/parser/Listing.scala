@@ -30,6 +30,17 @@ class Listing ( url : String, title : String, postBody : String, imageLocation :
 								datePosted : String, dateTakenDown : String ) {
 
 
+	final override def toString = {
+		if ( getIsDead ( ) ) {
+			"Link is dead at " + url
+		} else {
+			( if ( getIsDead ( ) ) "dead link: " else "Listed: " ) + title + " for $" + cost + " at " + url + "  " +
+				descriptionTable + "posted on " + datePosted
+		}
+	}
+
+	final def getIsDead ( ) = !"".equals ( dateTakenDown )
+
 	/**
 		* @param url
 		* @param document
@@ -50,8 +61,6 @@ class Listing ( url : String, title : String, postBody : String, imageLocation :
 
 	final def getURL ( ) = url
 
-	final def getIsDead ( ) = !"".equals ( dateTakenDown )
-
 	final def getBody ( ) = postBody
 
 	final def getDescription ( ) = descriptionTable
@@ -59,15 +68,6 @@ class Listing ( url : String, title : String, postBody : String, imageLocation :
 	final def getDateTakenDown ( ) = datePosted
 
 	final def getDatePosted ( ) = dateTakenDown
-
-	final override def toString = {
-		if ( getIsDead ( ) ) {
-			"Link is dead at " + url
-		} else {
-			( if ( getIsDead ( ) ) "dead link: " else "Listed: " ) + title + " for $" + cost + " at " + url + "  " +
-				descriptionTable + "posted on " + datePosted
-		}
-	}
 }
 
 final object Listing {
@@ -88,6 +88,15 @@ final object Listing {
 		return descriptionTable
 	}
 
+	def extractStringBetweenIndicators ( startString : String, endString : String, str : String ) : String = {
+		val startLoc = str.indexOf ( startString )
+		if ( startLoc < 0 ) {
+			return ""
+		}
+		val strStartingPoint = str.substring ( startLoc + startString.length )
+		strStartingPoint.substring ( 0, strStartingPoint.indexOf ( endString ) )
+	}
+
 	def extractStringAfterIndicator ( low : Character, high : Character, str : String, indicator : String ) : String = {
 		var returnVal = ""
 		var start = str.indexOf ( indicator ) + indicator.length
@@ -97,15 +106,6 @@ final object Listing {
 			start += 1
 		}
 		return returnVal
-	}
-
-	def extractStringBetweenIndicators ( startString : String, endString : String, str : String ) : String = {
-		val startLoc = str.indexOf ( startString )
-		if ( startLoc < 0 ) {
-			return ""
-		}
-		val strStartingPoint = str.substring ( startLoc + startString.length )
-		strStartingPoint.substring ( 0, strStartingPoint.indexOf ( endString ) )
 	}
 
 	def getElements ( url : String, selector : String ) : Elements = {
@@ -118,6 +118,10 @@ final object Listing {
 
 	def elementToString ( elems : List[ Elements ] ) : List[ String ] = {
 		for ( elem <- elems ) yield elem.text mkString
+	}
+
+	def tokenizeText ( string : String ) = {
+
 	}
 
 
