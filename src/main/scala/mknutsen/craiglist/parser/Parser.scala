@@ -76,10 +76,11 @@ object Parser {
 
 		val searchPostfix = args.get ( "searchPostfix" ).get
 		baseURL = "http://" + args.get ( "location" ).get + baseURL
-		val numListings = Integer.parseInt ( args.get ( "numListings" ).get ) - listings.size
+		val numListings = Integer.parseInt ( args.get ( "numListings" ).get )
 
 		var pageNumber = 0
 		while ( listings.size < numListings ) {
+			println ( numListings - listings.size )
 			val tempListings = getListings ( baseURL + searchStart + pageNumber * 100 + searchPostfix,
 																			 numListings - listings.size )
 			pageNumber += 1
@@ -87,7 +88,7 @@ object Parser {
 		}
 		println ( "number of listings: " + listings.length )
 		val out : PrintWriter =
-			new PrintWriter ( new BufferedWriter ( new FileWriter ( args.get ( "openFile" ).get, true ) ) )
+			new PrintWriter ( new BufferedWriter ( new FileWriter ( args.get ( "openFile" ).get, false ) ) )
 
 		if ( out == null ) {
 			printListings ( listings )
