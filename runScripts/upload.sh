@@ -1,7 +1,7 @@
 #!/bin/bash
 cd $cl
 _now=$(date +"%m_%d_%Y")
-_file=open_$_now.txt
-echo "Starting backup to $_file..."
-cp open.txt $_file
-. $db/dropbox_uploader.sh upload $_file /
+_open=open_$_now.txt
+echo "Starting backup to $_open"
+cp open.txt $_open
+. $db/dropbox_uploader.sh upload $_open /

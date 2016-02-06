@@ -61,7 +61,6 @@ object Parser {
 		println ( "number of listings: " + listings.size )
 		openFile.close ( )
 	}
-
 	def write ( args : mutable.HashMap[ String, String ] ) : Unit = {
 		val closedFile = new PrintWriter ( new BufferedWriter ( new FileWriter ( args.get ( "closedFile" ).get, true ) ) )
 		var listings = List [ Listing ]( )

@@ -31,12 +31,14 @@ class Listing ( url : String, title : String, postBody : String, imageLocation :
 
 
 	final override def toString = {
-		if ( getIsDead ( ) ) {
-			"Link is dead at " + url
+		( if ( getIsDead ( ) ) "dead link: " else "Listed: " ) + title + " for $" + cost + " at " + url + "  " +
+			descriptionTable + "posted on " + datePosted + ( if ( datePosted.equals ( "" ) ) {
+			" taken down on " +
+				dateTakenDown
 		} else {
-			( if ( getIsDead ( ) ) "dead link: " else "Listed: " ) + title + " for $" + cost + " at " + url + "  " +
-				descriptionTable + "posted on " + datePosted
-		}
+			""
+		} )
+
 	}
 
 	final def getIsDead ( ) = !"".equals ( dateTakenDown )
